@@ -1,86 +1,184 @@
-const form = document.getElementById("form");
+// H1 Title
 const errorTitle = document.getElementById("classReg");
-const errorElement = document.getElementById("error");
-const errorList = document.getElementsByClassName(".list");
-let messages = [];
 
-const displayErrors = () => {
-  // Display Error in Title
-  errorTitle.innerText = "Class Registration - ERROR";
+// Selects All inputs
+const inputList = document.querySelectorAll(`input`);
 
-  // Create unordered list and class .list
-  const list = document.createElement("ul");
-  list.className = "list";
+// If > 1 => e.preventDefault() is called
+let errorSwitch = [];
 
-  // Create a list in <div>#error</div> of error messages
-  for (let i = 0; i < messages.length; i++) {
-    let listItem = document.createElement("li");
-    let listValue = document.createTextNode(messages[i]);
-
-    // Append value to list item
-    listItem.appendChild(listValue);
-
-    // Append list item into the list
-    list.appendChild(listItem);
-
-    // Append dynamic list to Error Section
-    errorElement.append(list);
-  }
+// Object of Errors
+const errorMsg = {
+  emptyField: "is required.",
+  dob: "dob example dd/mm/yyyy",
+  phonePattern: "number example: 555-555-5555.",
+  emailPattern: "requires a valid email.",
+  zipPattern: "requires 5 digits.",
+  yesNo: "Please check a box."
 };
 
+// Actions performed on Submit
 form.addEventListener("submit", e => {
-  // Reset Errors to none on Submit
-  if (errorElement.firstChild) {
-    messages = [];
-    errorElement.innerHTML = "";
+  // Refresh List Item Errors to None on Submit
+  let errorUl = document.getElementsByClassName("errorText");
+  if (errorUl) {
+    for (let i = 0; i < errorUl.length; i++) {
+      // If error has been fixed, error field is reset to no error
+      let allErrorUls = errorUl[i];
+      allErrorUls.innerHTML = "";
+      errorSwitch = [];
+    }
   }
 
   // Iterate over input fields + Custom Validation / Message Creation
+  for (let i = 0; i < inputList.length; i++) {
+    // Create variable for inputListField
+    let inputListField = inputList[i];
 
-  for (let i = 0; i < form.elements.length; i++) {
-    // For empty text fields
-    if (
-      (form[i].type === "text" && form[i].value === "") ||
-      form[i].value === null
-    ) {
-      messages.push(`Please fill out ${form[i].name}`);
-      form[i].className = "errorBox";
+    // Reset Aria
+    inputListField.setAttribute("aria-invalid", false);
+
+    // Empty Field Errors
+    if (detectEmptyField(inputListField)) {
+      const errMsg = `Error: ${inputListField.title} ${errorMsg.emptyField}`;
+      makeError(inputListField, errMsg);
+    } else {
+      removeError(inputListField);
     }
 
-    if (form[i].type === "text" && form[i].value !== "") {
-      form[i].classList.remove("errorBox");
+    // Email Formatting Error
+    if (detectEmailError(inputListField)) {
+      const errMsg = `Error: ${inputListField.title} ${errorMsg.emailPattern}`;
+      makeError(inputListField, errMsg);
     }
-
-    // For empty email field
-    if (
-      (form[i].type === "email" && form[i].value === "") ||
-      form[i].value === null
-    ) {
-      messages.push(`Please fill out ${form[i].name}`);
-      form[i].className = "errorBox";
-    }
-    if (form[i].type === "email" && form[i].value !== "") {
-      form[i].classList.remove("errorBox");
-    }
-
-    // For First Name Length
-
-    // For First Name letters only
-
-    // For Last Name Length
-
-    // For Last Name letters only
 
     // For Phone Number Pattern
-
-    // For Email Address Pattern
+    detectPhoneError(inputListField);
+    // if (detectPhoneError(inputListField)) {
+    //   const errMsg = `Error: ${inputListField.title} ${errorMsg.phonePattern}`;
+    //   makeError(inputListField, errMsg);
+    // }
 
     // For Zip Code pattern / length
+    if (detectZipError(inputListField)) {
+      const errMsg = `Error: ${inputListField.title} ${errorMsg.zipPattern}`;
+      makeError(inputListField, errMsg);
+    }
   }
 
+  // Set Focuspoint on First Error field
+  let firstErrorInput = document.getElementsByClassName("errorBox");
+  const focusPoint = firstErrorInput[0];
+  focusPoint.focus();
+
   // If Error Stop Submit page, call Display Errors
-  if (messages.length > 0) {
+  if (errorSwitch.length > 0) {
     e.preventDefault();
-    displayErrors();
+    // displayErrors();
   }
 });
+
+// Detect if there is an error in the input field
+let detectEmptyField = inputListField => {
+  // For Empty Input Fields
+  if (
+    (inputListField.type === "text" && inputListField.value === "") ||
+    (inputListField.type === "email" && inputListField.value === "")
+  ) {
+    return true;
+  }
+};
+
+let detectEmailError = inputListField => {
+  // For Email Address Pattern
+  let emailInput = document.querySelectorAll("input[type=email]");
+  let emailValue = emailInput[0].value;
+
+  const re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+  if (
+    inputListField.type === "email" &&
+    inputListField.value !== "" &&
+    !re.test(String(emailValue).toLowerCase())
+  ) {
+    return true;
+  }
+};
+
+let detectZipError = inputListField => {
+  // For Email Address Pattern
+  let zipInput = document.querySelectorAll("input[name=zipCode]");
+  let zipValue = zipInput[0].value;
+
+  const re = /^[0-9]{5}(?:-[0-9]{4})?$/;
+
+  if (
+    inputListField.name === "zipCode" &&
+    inputListField.value !== "" &&
+    !re.test(String(zipValue))
+  ) {
+    return true;
+  }
+};
+
+let detectPhoneError = inputListField => {
+  let phoneInput = document.querySelectorAll("input[name=phone]");
+  // let studentPhoneInput = document.getElementById("studentPhone");
+  // console.log(studentPhoneInput.value)
+
+  const re = /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/;
+  for (let i = 0; i < phoneInput.length; i++) {
+    let phoneValue = phoneInput[i].value;
+    console.log(phoneValue);
+    console.log(re.test(String(phoneValue)));
+    // console.log(phoneInput);
+    // if (inputListField.name === "phone" && !re.test(String(phoneValue))) {
+    //   return true;
+  }
+  // }
+};
+
+// Make the error show under the fields.
+let makeError = (inputListField, errMsg) => {
+  errorSwitch.push("Error");
+
+  // Set Aria Attributes to
+  inputListField.setAttribute("aria-invalid", true);
+  inputListField.setAttribute("aria-describeby", "errorIdForAria");
+
+  // Create unordered list and class .errorText
+  const list = document.createElement("ul");
+  list.className = "errorText";
+
+  // Create List Item
+  let listItem = document.createElement("li");
+  // Give list item ID
+  listItem.id = "errorIdForAria";
+  let listValue = document.createTextNode(`${errMsg}`);
+
+  // Add list Value to li
+  listItem.append(listValue);
+
+  // Append li to ul
+  list.appendChild(listItem);
+
+  // Create variables for parent Div of ul
+  let parentDiv = inputListField.parentNode;
+
+  // Append ul to parentDiv
+  parentDiv.appendChild(list);
+
+  // Add ErrorBox CSS styling to input field
+  inputListField.className = "errorBox";
+};
+
+let removeError = inputListField => {
+  inputListField.setAttribute("aria-invalid", false);
+  inputListField.classList.remove("errorBox");
+  inputListField.removeAttribute("aria-describeby", "errorIdForAria");
+
+  // Attempting to remove errorText UL....
+  // let errorUl = document.getElementsByClassName("errorText");
+  // let parentDiv = errorUl.parentNode;
+  // parentDiv.removeChild(errorUl);
+};

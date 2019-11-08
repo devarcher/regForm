@@ -40,14 +40,13 @@
         >
       </section>
 
-      <div id="error"></div>
-
-      <form action="#" method="POST" id="form" class="formStyle">
+      <form action="#" method="POST" id="form" class="formStyle" novalidate>
         <fieldset class="fSet">
           <legend class="legendTitle">Contact Info</legend>
 
           <p>* = Required</p>
 
+          <div class='fieldWrap'>
           <label for="firstName">* First Name:</label>
           <input
             id="firstName"
@@ -56,8 +55,11 @@
             name="firstName"
             aria-required="true"
             autocomplete="given-name"
+            title="First Name"
           />
+        </div>
 
+        <div class='fieldWrap'>
           <label for="lastName">* Last Name:</label>
           <input
             id="lastName"
@@ -66,20 +68,50 @@
             name="lastName"
             aria-required="true"
             autocomplete="family-name"
+            title="Last Name"
           />
+        </div>
 
-          <label for="phone">* Phone: </label>
+        <div class='fieldWrap'>
+          <label for="phone">* Student Phone: </label>
           <input
-            id="phone"
-            class="validate"
-            pattern="^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$"
+            id="studentPhone"
+            class="validate phone"
             type="text"
             name="phone"
-            title="Please enter a 10 digit phone number. Example: 555-555-5555"
+            title="Student Phone"
             aria-required="true"
             autocomplete="tel"
           />
+        </div>
 
+        <div class='fieldWrap'>
+          <label for="phone">* Emergency Phone: </label>
+          <input
+            id="emergencyPhone"
+            class="validate phone"
+            type="text"
+            name="phone"
+            title="Emergency Phone"
+            aria-required="true"
+            autocomplete="tel"
+          />
+        </div>
+
+        <div class='fieldWrap'>
+          <label for="phone">* Physician Phone: </label>
+          <input
+            id="physicianPhone"
+            class="validate phone"
+            type="text"
+            name="phone"
+            title="Physician Phone"
+            aria-required="true"
+            autocomplete="tel"
+          />
+        </div>
+
+        <div class='fieldWrap'>
           <label for="email">* Email: </label>
           <input
             type="email"
@@ -88,8 +120,11 @@
             class="validate"
             aria-required="true"
             autocomplete="email"
+            title="Email"
           />
+        </div>
 
+        <div class='fieldWrap'>
           <label for="address">* Address:</label>
           <input
             id="address"
@@ -98,8 +133,11 @@
             name="address"
             aria-required="true"
             autocomplete="street-address"
+            title="Address"
           />
+        </div>
 
+        <div class='fieldWrap'>
           <label for="city">* City:</label>
           <input
             id="city"
@@ -108,8 +146,11 @@
             name="city"
             aria-required="true"
             autocomplete="address-level2"
+            title="City"
           />
+        </div>
 
+        <div class='fieldWrap'>
           <label for="state">* State:</label>
           <input
             id="state"
@@ -118,19 +159,22 @@
             name="state"
             aria-required="true"
             autocomplete="address-level1"
+            title='State'
           />
+        </div>
 
+        <div class='fieldWrap'>
           <label for="zipCode">* Zip Code:</label>
           <input
             id="zipCode"
             class="validate"
             type="text"
             name="zipCode"
-            title="Please Enter a 5 digit zip code."
+            title="Zip Code"
             aria-required="true"
             autocomplete="postal-code"
-            pattern="^[0-9]{5}(?:-[0-9]{4})?$"
           />
+        </div>
         </fieldset>
         <div class="buttonDiv">
           <button type="submit" form="form" value="Submit">Submit</button>
